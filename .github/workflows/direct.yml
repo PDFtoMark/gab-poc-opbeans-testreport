@@ -1,0 +1,26 @@
+name: test-reporter-direct
+on:
+  workflow_run:
+    workflows:
+      - test
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  report:
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: phoenix-actions/test-reporting@7317eea6e13c47348dd0bb318669485157c518d6
+        with:
+          artifact: /test-results(.*)/
+          name: 'Test Report $1'
+          path: "**/*.xml"
+          reporter: java-junit
