@@ -1,0 +1,32 @@
+name: test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create junit xml
+      run: |
+        mkdir -p target
+        cat > target/junit.xml <<'XML'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <testsuites time="0.10">
+          <testsuite name="demo" time="0.10">
+            <testcase name="works" classname="demo" time="0.10"/>
+          </testsuite>
+        </testsuites>
+        XML
+    - name: Store test results
+      if: success() || failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-demo
+        path: target/*.xml
